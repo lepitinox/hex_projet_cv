@@ -37,7 +37,7 @@ train_generator = train_datagen.flow_from_dataframe(dataframe=train_df,
                                                     y_col="label",
                                                     class_mode="categorical",
                                                     target_size=(64, 64),
-                                                    batch_size=32)
+                                                    batch_size=16)
 
 # This is a similar generator, for validation data
 validation_generator = test_datagen.flow_from_dataframe(dataframe=validation_df,
@@ -46,7 +46,7 @@ validation_generator = test_datagen.flow_from_dataframe(dataframe=validation_df,
                                                         y_col="label",
                                                         class_mode="categorical",
                                                         target_size=(64, 64),
-                                                        batch_size=32)
+                                                        batch_size=16)
 
 # 26 categories to classify
 num_classes = 26
@@ -65,7 +65,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy',
                 metrics=['accuracy'])
 
 hist = model.fit(train_generator,
-                            steps_per_epoch=100,
+                            steps_per_epoch=2000,
                             epochs=10,
                             validation_data=validation_generator,
                             validation_steps=800,
