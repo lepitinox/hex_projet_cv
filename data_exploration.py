@@ -32,6 +32,7 @@ def explore_dataframes():
 
     print(f"Number of images: {len(list(image_path.glob('**/*.jpg')))}")
 
+
 def explore_images():
     images_path = Path('data/train')
     images = list(images_path.glob('**/*.jpg'))
@@ -46,6 +47,7 @@ def explore_images():
     print("in somme images there are multiple people, we will need to clean the data")
     print("but also some images there are no faces, we will need to clean the data")
 
+
 if __name__ == '__main__':
     explore_dataframes()
-    explore_²images()
+    explore_images()

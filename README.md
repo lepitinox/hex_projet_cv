@@ -43,3 +43,4 @@ There are 26 different emotions.
 Dataset is unbalanced, with 3 emotions representing 65% of the dataset.
 ### Images
 Some images have multiple faces, some have no face.
+some images are in color, some are in black and white.
