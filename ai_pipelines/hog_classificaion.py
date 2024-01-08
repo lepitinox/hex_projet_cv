@@ -10,8 +10,8 @@ from sklearn.metrics import classification_report
 from sklearn.svm import SVC
 from tqdm import tqdm
 
-from data_loader import train_df, test_df
-from data_holder import DataHolder
+from datamanagement.data_loader import train_df, test_df
+from datamanagement.data_holder import DataHolder
 
 import multiprocessing as mp
 

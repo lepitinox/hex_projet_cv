@@ -5,9 +5,9 @@ main goal if to detect faces in an image and then use the face to classify the i
 import cv2
 import multiprocessing as mp
 from tqdm import tqdm
-from data_holder import DataHolder
+from datamanagement.data_holder import DataHolder
 
-face_cascade = cv2.CascadeClassifier('data/haarcascade_frontalface_default.xml')
+face_cascade = cv2.CascadeClassifier('../data/haarcascade_frontalface_default.xml')
 
 
 def detect_face(path):
@@ -20,8 +20,14 @@ def detect_face(path):
 
 
 if __name__ == '__main__':
+    multipro = True
     data = DataHolder(None, None, update=False)
     x_train, y_train, x_test, y_test = data.give_me_my_data(data_type="RGB")
-    with mp.Pool() as p:
-        faces = list(tqdm(p.imap(detect_face, x_train['path'].tolist()), total=len(x_train['path'].tolist())))
+    if multipro:
+        with mp.Pool() as p:
+            faces = list(tqdm(p.imap(detect_face, x_train["path"].tolist()), total=len(x_train["path"].tolist())))
+    else:
+        faces = []
+        for i in tqdm(x_train["path"].tolist()):
+            faces.append(detect_face(i))
     print(faces)

@@ -6,7 +6,7 @@ from pathlib import Path
 import matplotlib
 import pandas as pd
 
-from data_loader import train_df, test_df
+from datamanagement.data_loader import train_df, test_df
 
 matplotlib.use('TkAgg')
 import numpy as np
@@ -16,7 +16,7 @@ from sklearn.ensemble import RandomForestClassifier
 from tqdm import tqdm
 
 tqdm.pandas()
-from data_holder import DataHolder
+from datamanagement.data_holder import DataHolder
 
 import multiprocessing as mp
 

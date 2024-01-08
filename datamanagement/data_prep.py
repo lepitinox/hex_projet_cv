@@ -1,7 +1,7 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from data_loader import train_df
+from .data_loader import train_df
 from tqdm import tqdm
 
 tqdm.pandas()

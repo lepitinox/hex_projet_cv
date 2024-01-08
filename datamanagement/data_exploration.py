@@ -28,13 +28,13 @@ def explore_dataframes():
     print(f"Labels pct: {(train_df['label'].value_counts() / train_df.shape[0] * 100).round(3)}")
     print(f"Nans: {train_df.isna().sum()}")
 
-    image_path = Path('data/train')
+    image_path = Path('../data/train')
 
     print(f"Number of images: {len(list(image_path.glob('**/*.jpg')))}")
 
 
 def explore_images():
-    images_path = Path('data/train')
+    images_path = Path('../data/train')
     images = list(images_path.glob('**/*.jpg'))
     print(f"Number of images: {len(images)}")
     print(f"Example of image path: {images[0]}")
