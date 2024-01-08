@@ -41,3 +41,5 @@ Box data uses different format and will need dataprep.
 Label is a string, representing the emotion.
 There are 26 different emotions.
 Dataset is unbalanced, with 3 emotions representing 65% of the dataset.
+### Images
+Some images have multiple faces, some have no face.
