@@ -2,10 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
-
+import matplotlib
+matplotlib.use('TkAgg')
 from data_loader import train_df, test_df
 
-
+print(train_df.shape)
+print(test_df.shape)
 
 
 def explore_dataframes():
@@ -29,6 +31,14 @@ def explore_dataframes():
     print(f"data are heavily unbalanced")
     print(f"Labels pct: {(train_df['label'].value_counts() / train_df.shape[0] * 100).round(3)}")
     print(f"Nans: {train_df.isna().sum()}")
+    # plot histogram of labels proportion
+    sns.histplot(train_df['label'])
+    plt.xticks(rotation=45, ha="right")
+    plt.show()
+    sns.histplot(test_df['label'])
+    plt.xticks(rotation=45, ha="right")
+    plt.show()
+
 
     image_path = Path('../data/train')
 

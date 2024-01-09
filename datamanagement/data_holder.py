@@ -33,6 +33,7 @@ class DataHolder:
         test_df : pd.DataFrame
             Dataframe containing the test data
         """
+        self.optimize = None
         self.le = LabelEncoder()
         if update:
             self.train_df = train_df
@@ -91,6 +92,12 @@ class DataHolder:
         """
         self.train_df.to_csv(self.base_path / "train_df.csv", index=False)
 
+    def get_label_importance(self):
+        """
+        This function returns the label importance
+        """
+        return self.train_df["label"].value_counts()
+
     def save_test_df(self):
         """
         This function saves the test_df
@@ -117,11 +124,16 @@ class DataHolder:
         test_labels = self.le.transform(self.test_df["label"]).astype(str)
         return train_labels, test_labels
 
-    def balance_classes(self):
+    def keep_channels(self, channels):
         """
-        This function balances the classes
+        This function keeps only the channels specified
+        Parameters
+        ----------
+        channels : list
+            list of channels to keep
         """
-
+        self.train_df = self.train_df[self.train_df["canals"].isin(channels)]
+        self.test_df = self.test_df[self.test_df["canals"].isin(channels)]
 
     def random_sample(self, pct=0.1):
         """
@@ -129,7 +141,7 @@ class DataHolder:
         """
         self.reaload_data()
         self.train_df = self.train_df.sample(frac=pct)
-        self.test_df = self.test_df.sample(frac=pct)
+        # self.test_df = self.test_df.sample(frac=pct)
 
     def uniform_sample(self, pct=0.1):
         """
@@ -137,17 +149,24 @@ class DataHolder:
         """
         self.reaload_data()
         self.train_df = self.train_df.groupby("label").sample(frac=pct)
-        self.test_df = self.test_df.groupby("label").sample(frac=pct)
+        # self.test_df = self.test_df.groupby("label").sample(frac=pct)
+
+    def test_balanced_sample(self, pct=1):
+        """
+        This function samples the train_df and the test_df
+        """
+        nb_test = self.test_df["label"].value_counts().min() * pct
+        self.test_df = self.test_df.groupby("label").sample(n=int(nb_test))
 
     def balanced_sample(self, pct=0.1):
         """
         This function samples the train_df and the test_df
         """
         self.reaload_data()
-        nb_train = self.train_df["label"].value_counts().min()*pct
-        nb_test = self.test_df["label"].value_counts().min()*pct
-        self.train_df = self.train_df.groupby("label").sample(n=nb_train)
-        self.test_df = self.test_df.groupby("label").sample(n=nb_test)
+        nb_train = self.train_df["label"].value_counts().min() * pct
+        nb_test = self.test_df["label"].value_counts().min() * pct
+        self.train_df = self.train_df.groupby("label").sample(n=int(nb_train))
+        # self.test_df = self.test_df.groupby("label").sample(n=int(nb_test))
 
     def give_me_my_data(self, data_type="all"):
         if data_type == "RGB":
@@ -169,10 +188,11 @@ class DataHolder:
 
     def create_generators(self):
         self.train_generator = ImageDataGenerator(rescale=1. / 255,
-                                                  shear_range=0.2,
-                                                  zoom_range=0.2,
+                                                  preprocessing_function=self.optimize,
                                                   horizontal_flip=True)
-        self.validation_generator = ImageDataGenerator(rescale=1. / 255)
+        self.validation_generator = ImageDataGenerator(rescale=1. / 255,
+                                                       preprocessing_function=self.optimize
+                                                       )
 
     def create_data_pipline(self):
         self.create_generators()

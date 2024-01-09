@@ -15,18 +15,28 @@ from sklearn.metrics import classification_report
 from sklearn.ensemble import RandomForestClassifier
 from tqdm import tqdm
 
+from tensorflow.keras.layers import Dense, Flatten, Dropout
+from tensorflow.keras.models import Model, Sequential
+
 tqdm.pandas()
 from datamanagement.data_holder import DataHolder
 
 import multiprocessing as mp
 
 
-def create_histogram(path):
-    image = cv2.imread(path)
-    hist = cv2.calcHist([image], [0, 1, 2], None, [8, 8, 8],
-                        [0, 256, 0, 256, 0, 256])
-    hist = cv2.normalize(hist, hist).flatten()
-    return hist
+def rgb_histogram(image):
+    histogram = cv2.calcHist([image], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
+    cv2.normalize(histogram, histogram)
+    return histogram.flatten()
+
+
+def run(df):
+    ret = []
+    for i in df['path'].tolist():
+        img = cv2.imread(i)
+        hist = rgb_histogram(img)
+        ret.append(hist)
+    return ret
 
 
 if __name__ == '__main__':
@@ -36,25 +46,23 @@ if __name__ == '__main__':
     y_train = np.array(y_train)
     y_test = np.array(y_test)
 
-    paths = x_train['path'].tolist()
+    X_train = run(x_train)
+    X_test = run(x_test)
 
-    # create the histogram
-    if not Path("data/Xtrain_rgb.parquet").exists():
-        with mp.Pool() as p:
-            hist = list(tqdm(p.imap(create_histogram, paths), total=len(paths)))
-        # create the dataframe
-        Xtrain = pd.DataFrame({"rgb": hist, "label": y_train})
-        Xtrain.to_parquet("data/Xtrain_rgb.parquet")
+    model = Sequential([
+        Dense(256, activation='relu', input_shape=(X_train[0].shape,)),
+        Dense(128, activation='relu'),
+        Dense(64, activation='relu'),
+        Dense(26, activation='softmax'),
+    ])
 
-        with mp.Pool() as p:
-            hist = list(tqdm(p.imap(create_histogram, x_test['path'].tolist()), total=len(x_test['path'].tolist())))
-        Xtest = pd.DataFrame({"rgb": hist, "label": y_test})
-        Xtest.to_parquet("data/Xtest_rgb.parquet")
-    else:
-        Xtrain = pd.read_parquet("data/Xtrain_rgb.parquet")
-        Xtest = pd.read_parquet("data/Xtest_rgb.parquet")
-    model = RandomForestClassifier(n_estimators=100)
-    model.fit(Xtrain["rgb"].values, y_train)
-    le = data.le
-    predictions = model.predict(Xtest["rgb"])
-    print(classification_report(y_train, predictions, target_names=le.classes_))
+    model.compile(optimizer='adam',
+                    loss='categorical_crossentropy',
+                    metrics=['accuracy'])
+
+    hist = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_test, y_test))
+
+    y_pred = model.predict(X_test)
+
+    print(classification_report(y_test.argmax(axis=1), y_pred.argmax(axis=1), target_names=data.classes))
+
