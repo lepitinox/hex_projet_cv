@@ -11,12 +11,12 @@ import matplotlib.pyplot as plt
 
 def create_model_cnn(input_shape, num_classes):
     model = Sequential()
-    model.add(Conv2D(32, (3, 3), padding='same', activation='relu',
+    model.add(Conv2D(32, (5, 5), padding='same', activation='relu',
                      input_shape=input_shape))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Conv2D(32, (3, 3), activation='relu'))
+    model.add(Conv2D(64, (5, 5), padding='same', activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    model.add(Conv2D(128, (3, 3), activation='relu'))
     model.add(Flatten())
     model.add(Dense(num_classes, activation='softmax'))
     return model
@@ -24,12 +24,14 @@ def create_model_cnn(input_shape, num_classes):
 
 if __name__ == '__main__':
     # Configs
-    data = DataHolder(train_df, test_df, update=False)
-    data.sample(0.2)
     show_graph = False
     save_graph = "cnn.png"
     num_classes = 26
-    input_shape = (64, 64, 3)
+    input_shape = (256, 256, 3)
+    DataHolder.target_size = input_shape[:2]
+    data = DataHolder(train_df, test_df, update=False)
+    data.balanced_sample(0.2)
+
     spe = data.train_df.shape[0] // data.batch_size
     vs = data.test_df.shape[0] // data.batch_size
 

@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 
-from data_loader import train_df
+from data_loader import train_df, test_df
+
+
 
 
 def explore_dataframes():
@@ -13,8 +15,8 @@ def explore_dataframes():
     print(f"Types of columns: {train_df.dtypes}")
     print(f"Columns example: {train_df.iloc[0]}")
     print("histogram of the log of size:")
-    sns.histplot(train_df['size'], bins=100, log_scale=True)
-    plt.show()
+    # sns.histplot(train_df['size'], bins=100, log_scale=True)
+    # plt.show()
     print(train_df.describe())
     print("Data are mostly of the same size, but there are some outliers")
     print(f"Extension(s) of images: {train_df['extension'].unique()}")

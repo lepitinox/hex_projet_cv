@@ -117,13 +117,37 @@ class DataHolder:
         test_labels = self.le.transform(self.test_df["label"]).astype(str)
         return train_labels, test_labels
 
-    def sample(self, pct=0.1):
+    def balance_classes(self):
+        """
+        This function balances the classes
+        """
+
+
+    def random_sample(self, pct=0.1):
         """
         This function samples the train_df and the test_df
         """
         self.reaload_data()
         self.train_df = self.train_df.sample(frac=pct)
         self.test_df = self.test_df.sample(frac=pct)
+
+    def uniform_sample(self, pct=0.1):
+        """
+        This function samples the train_df and the test_df
+        """
+        self.reaload_data()
+        self.train_df = self.train_df.groupby("label").sample(frac=pct)
+        self.test_df = self.test_df.groupby("label").sample(frac=pct)
+
+    def balanced_sample(self, pct=0.1):
+        """
+        This function samples the train_df and the test_df
+        """
+        self.reaload_data()
+        nb_train = self.train_df["label"].value_counts().min()*pct
+        nb_test = self.test_df["label"].value_counts().min()*pct
+        self.train_df = self.train_df.groupby("label").sample(n=nb_train)
+        self.test_df = self.test_df.groupby("label").sample(n=nb_test)
 
     def give_me_my_data(self, data_type="all"):
         if data_type == "RGB":

@@ -17,11 +17,13 @@ import multiprocessing as mp
 
 from skimage.feature import hog
 
+
 def create_histogram(path):
     image = cv2.imread(path)
     fd, hog_image = hog(image, orientations=8, pixels_per_cell=(16, 16),
                         cells_per_block=(1, 1), visualize=True, multichannel=True)
     return fd
+
 
 if __name__ == '__main__':
     # clean the data
@@ -52,4 +54,3 @@ if __name__ == '__main__':
     le = data.le
     predictions = model.predict(Xtest["hog"])
     print(classification_report(y_train, predictions, target_names=le.classes_))
-

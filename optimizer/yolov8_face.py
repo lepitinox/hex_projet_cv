@@ -18,6 +18,8 @@ def find_face(img_path):
     results = Detections.from_ultralytics(output[0])
     return results
 
+def
+
 
 if __name__ == '__main__':
     data = DataHolder(None, None, update=False)
